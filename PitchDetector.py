@@ -43,15 +43,40 @@ class AudioStream:
         self.PlotData()
 
     def PlotData(self):
+        #Generates one additional data point to plot
         plot_data = self.stream.read(self.CHUNK)
         plot_int_data = np.fromstring(plot_data, dtype=np.int16)
-        fig, ax = plt.subplots()
-        ax.plot(plot_int_data, '-')
-        plt.xlabel("Sample Number")
-        plt.ylabel("Amplitude")
-        plt.title("Sound Wave")
+        f, ax = plt.subplots(2)
+
+        x = np.arange(10000)
+        y = np.random.randn(10000)
+
+        #This plot shows the integer sound wave data
+        li, = ax[0].plot(x, y)
+        ax[0].set_xlim(0, self.CHUNK)
+        ax[0].set_ylim(-3000, 3000)
+        ax[0].set_title("Sound Wave")
+        ax[0].set_xlabel("Number of Samples")
+        ax[0].set_ylabel("Amplitude")
+        li.set_xdata(np.arange(len(plot_int_data)))
+        li.set_ydata(plot_int_data)
+
+        #This plot shows the transformed data, converted into decibels
+        li2, = ax[1].plot(x, y)
+        ax[1].set_xlim(0, 2000)
+        ax[1].set_ylim(0, 100)
+        ax[1].set_title("Fourier Transform")
+        ax[1].set_xlabel("Frequency (Hz)")
+        ax[1].set_ylabel("Strength (Db)")
+
+        #converts fourier transformed data into decibels
+        fourier_plot_data = 10 * np.log10(abs(np.fft.fft(plot_int_data)))
+        li2.set_xdata(np.arange(len(fourier_plot_data)) * 10)
+        li2.set_ydata(fourier_plot_data)
+
+        #Makes sure plots don't overlap
+        plt.tight_layout()
         plt.show()
-        plt.close('all')
 
 if __name__ == '__main__':
     AudioStream()
