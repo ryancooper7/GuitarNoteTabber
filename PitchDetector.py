@@ -149,8 +149,6 @@ class AudioStream:
 
             rms = audioop.rms(data, 2)
 
-            #print(rms)
-
             #changes binary data into integer data with amplitude on y axis and time on x axis
             int_data = np.fromstring(data, dtype = np.int16)
             processed_data = np.abs(np.fft.fft(int_data))
@@ -161,7 +159,7 @@ class AudioStream:
             max_frequency_index = np.argmax(processed_data)
             frequency_in_hertz = abs(frequencies[max_frequency_index] * self.RATE)
             note = self.NoteFromFrequency(self.notes, frequency_in_hertz,start = 0, end=None)
-            print counter, frequency_in_hertz, note
+            print counter, frequency_in_hertz, note, rms
         self.PlotData()
 
     def PlotData(self):

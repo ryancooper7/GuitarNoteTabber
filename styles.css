@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Avenir');
+@font-face {
+    font-family: 'header-font'; /*a name to be used later*/
+    src: url('keeptf__.ttf'); /*URL to font*/
+}
+
+* {
+  font-family: 'Avenir';
+}
+h1 {
+  text-align: center;
+  font-family: 'header-font';
+  font-weight: normal;
+  font-size: 35px;
+  color: #D37F66;
+}
+
+h2 {
+  color: #D37F66;
+}
+
+body {
+  margin-left: 25px;
+}
+
+p {
+  color: #046294;
+}
+
+audio {
+  margin-left: 50px;
+}
+
+.button {
+  background-color: #D37F66;
+  border: none;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  padding: 15px 32px;
+  margin-top: 50px;
+}

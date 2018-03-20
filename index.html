@@ -1,13 +1,26 @@
 <head>
-  <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Coiny">
-  <style>
-    h1 {
-      text-align: center;
-      font-family: 'Coiny', serif;
-    }
-  </style>
+  <link rel = "stylesheet" type = "text/css" href = "styles.css">
 </head>
 <body>
   <h1>GuitarNoteTabber</h1>
+  <h2>Instructions</h2>
+  <p>Press play to begin and then play a string of individual guitar notes
+    and the names of the notes will be returned.
+  </p>
+  <a href="#" class="button">Begin Recording</a>
+  <audio id = 'player' controls></audio>
+  <script>
+    var player = document.getElementById('player');
+
+    var handleSuccess = function(stream) {
+      if (window.URL) {
+        player.src = window.URL.createObjectURL(stream);
+      } else {
+        player.src = stream;
+      }
+    };
+
+    navigator.mediaDevices.getUserMedia({audio: true, video: false})
+      .then(handleSuccess);
+  </script>
 </body>
