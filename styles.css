@@ -31,7 +31,7 @@ audio {
   margin-left: 50px;
 }
 
-.button {
+button {
   background-color: #D37F66;
   border: none;
   color: white;
@@ -40,4 +40,8 @@ audio {
   font-size: 16px;
   padding: 15px 32px;
   margin-top: 50px;
+}
+
+audio {
+  background-color: white;
 }

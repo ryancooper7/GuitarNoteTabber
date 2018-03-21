@@ -1,26 +1,59 @@
+<!--MediaRecorder API examples referenced in learning to
+take user audio input-->
+
 <head>
   <link rel = "stylesheet" type = "text/css" href = "styles.css">
 </head>
 <body>
+  <div id = "div1">
   <h1>GuitarNoteTabber</h1>
   <h2>Instructions</h2>
-  <p>Press play to begin and then play a string of individual guitar notes
-    and the names of the notes will be returned.
+  <p>Press the button to begin and then play individual guitar notes.
+    Press the button again to stop and the names of the notes will be returned.
   </p>
-  <a href="#" class="button">Begin Recording</a>
-  <audio id = 'player' controls></audio>
+  <button id = "record">Begin Recording</button>
+  <audio id = "player" controls></audio>
+</div>
   <script>
-    var player = document.getElementById('player');
+    var recordButton, recorder;
+    var clicked = 0;
 
-    var handleSuccess = function(stream) {
-      if (window.URL) {
-        player.src = window.URL.createObjectURL(stream);
-      } else {
-        player.src = stream;
-      }
+    window.onload = function () {
+      recordButton = document.getElementById('record');
+
+      //Get permission to use computer microphone
+      navigator.mediaDevices.getUserMedia({
+        audio: true
+      })
+      .then(function (stream) {
+        //Use MediaRecorder API to record audio stream from getUserMedia
+        recorder = new MediaRecorder(stream);
+
+        recordButton.addEventListener('click', toggleRecording);
+        recorder.addEventListener('dataavailable', onFinishedRecording);
+      });
     };
 
-    navigator.mediaDevices.getUserMedia({audio: true, video: false})
-      .then(handleSuccess);
+    //Starts or stops recording and modifies button text
+    function toggleRecording() {
+      if (clicked == 0) {
+        recorder.start();
+        recordButton.innerText = "Stop Recording";
+        clicked = 1;
+      }
+      else {
+        recorder.stop();
+        clicked = 0;
+        recordButton.innerText = "Start Recording"
+      }
+    }
+
+    //Recieves a "dataavailable" signal upon the recorder being stopped
+    //and then takes the recorded data and creates a URL object to store
+    //in the HTML audio element
+    function onFinishedRecording(e) {
+      var audio = document.getElementById('player');
+      audio.src = URL.createObjectURL(e.data);
+    }
   </script>
 </body>
