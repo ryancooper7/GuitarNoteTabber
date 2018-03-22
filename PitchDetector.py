@@ -121,6 +121,9 @@ class AudioStream:
     ]
 
     def __init__(self):
+        self.rms_list = []
+        self.note_list = []
+
         #buffer size
         self.CHUNK = 4096
 
@@ -159,8 +162,13 @@ class AudioStream:
             max_frequency_index = np.argmax(processed_data)
             frequency_in_hertz = abs(frequencies[max_frequency_index] * self.RATE)
             note = self.NoteFromFrequency(self.notes, frequency_in_hertz,start = 0, end=None)
-            print counter, frequency_in_hertz, note, rms
-        self.PlotData()
+            self.rms_list.append(rms)
+            self.note_list.append(note)
+            if rms > 1800:
+                print note
+            #print counter, frequency_in_hertz, note, rms
+        self.find_notes()
+        self.plot_vol_data()
 
     def PlotData(self):
         #Generates one additional data point to plot
@@ -198,6 +206,12 @@ class AudioStream:
         plt.tight_layout()
         #plt.show()
 
+    #Creates plot of volume data for development purposes
+    def plot_vol_data(self):
+        plt.plot(self.rms_list)
+        plt.show()
+
+    #Gets the musical note from the frequency using a binary search algorithm
     def NoteFromFrequency(self, arr, frequency, start=0, end=None):
         if end is None:
             end = len(arr) - 1
@@ -215,6 +229,20 @@ class AudioStream:
         if frequency < arr[lowermid]:
             return self.NoteFromFrequency(arr, frequency, start, lowermid - 1)
         return self.NoteFromFrequency(arr, frequency, highermid+1, end)
+
+    #Finds the notes to return to the user by looking for peaks in volume
+    #and then checking whether they are greater than 1000 rms which was found to
+    #be a reasonoble bottom limit for a picked guitar string in testing
+    def find_notes(self):
+        notes = []
+        if self.rms_list[0] > self.rms_list[1] and self.rms_list[0] > 1000:
+            notes.append(self.note_list[0])
+        for i in range(1, len(self.rms_list) - 1):
+            if self.rms_list[i-1] < self.rms_list[i] and self.rms_list[i] > self.rms_list[i+1] and self.rms_list[i] > 1000:
+                notes.append(self.note_list[i])
+        if self.rms_list[len(self.rms_list)-1] > self.rms_list[len(self.rms_list)-2] and self.rms_list[len(self.rms_list) - 1]:
+            notes.append(self.note_list[len(self.rms_list)])
+        print notes
 
 if __name__ == '__main__':
     s = AudioStream()
