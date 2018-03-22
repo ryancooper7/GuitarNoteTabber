@@ -24,11 +24,11 @@ With that being said, my goal for Assignment 4 is to break the sound data into i
 <p>
 To test my project I used the following video which plays a constant E note at 659.26 hz.
 </p>
-<img src = "YoutubeVideo.png"></img>
+<img src = "YoutubeVideo.png" /img>
 <p>
 The following plots show the results of playing this video while running the program:
 </p>
-<img src="WaveSampleOutput.png"></img>
+<img src="WaveSampleOutput.png" /img>
 <p>
 It can be seen that the sound wave appears fairly constant, as would be expected of a constant tone. The slight discrepancies can be explained by the background noise from the environment.
 </p>
@@ -37,4 +37,4 @@ The Fourier Transform plot shows what would be expected, with the maximum peak c
 </p>
 <p> The final image below is the console output from running the program while the video was playing. The numbers in the first column correspond to the sample number, which are taken every 1/44100 of a second. The second column corresponds to the strongest frequency recorded. It can be seen that the output is only off by about 3 Hz from the signal claimed by the video. This shows that the program is fairly accurate for audio analysis.
 </p>
-<img src = "FrequencySampleOutput.png"></img>
+<img src = "FrequencySampleOutput.png" /img>
