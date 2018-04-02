@@ -13,6 +13,17 @@ take user audio input-->
   </p>
   <button id = "record">Begin Recording</button>
   <audio id = "player" controls></audio>
+  <p id="instructions">Enter a number to take the square root:</p>
+  <form method="POST">
+    <input name="text">
+    <input value = "calculate" type="submit">
+  </form>
+  {% if text %}
+  <p>
+      The square root is:
+  </p>
+  <h3>{{text}}</h3>
+  {% endif %}
 </div>
   <script>
     var recordButton, recorder;

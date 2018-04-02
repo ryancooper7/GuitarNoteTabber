@@ -17,6 +17,12 @@ h1 {
 
 h2 {
   color: #D37F66;
+  font-size: 35px;
+}
+
+h3 {
+  color: #D37F66;
+  font-size: 35px;
 }
 
 body {
@@ -44,4 +50,25 @@ button {
 
 audio {
   background-color: white;
+}
+
+#instructions {
+  margin-top: 75px;
+}
+
+input[type=submit] {
+  background-color: #D37F66;
+  border: none;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+input {
+  margin-right: 25px;
+}
+
+form {
 }
