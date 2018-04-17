@@ -2,6 +2,7 @@
 take user audio input-->
 
 <head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <link rel = "stylesheet" type = "text/css" href = "{{url_for('static',filename='stylesheets/styles.css')}}">
 </head>
 <body>
@@ -13,21 +14,31 @@ take user audio input-->
   </p>
   <button id = "record">Begin Recording</button>
   <audio id = "player" controls></audio>
-  <p id="instructions">Enter a number to take the square root:</p>
+  <!--<form action = "" method = "post">
+      <input type="submit"/>
+  </form>-->
+  <button onclick="do_ajax()">Do Ajax please</button>
+  <div id ="new-text">
+  </div>
+
+  <!--<p id="instructions">Enter a number to take the square root:</p>
   <form method="POST">
     <input name="text">
     <input value = "calculate" type="submit">
   </form>
+
+  <button onclick="do_ajax();">Click</button>
   {% if text %}
   <p>
       The square root is:
   </p>
   <h3>{{text}}</h3>
-  {% endif %}
-</div>
+  {% endif %}-->
+  </div>
   <script>
     var recordButton, recorder;
     var clicked = 0;
+    var data;
 
     window.onload = function () {
       recordButton = document.getElementById('record');
@@ -44,6 +55,17 @@ take user audio input-->
         recorder.addEventListener('dataavailable', onFinishedRecording);
       });
     };
+
+    function do_ajax() {
+      var req = new XMLHttpRequest();
+      req.onreadystatechange = function() {
+        if (this.readyState==4 && this.status == 200) {
+          document.getElementById("new-text").innerHTML = this.responseText;
+        }
+      };
+      req.open("POST", "/index/", true);
+      req.send(data);
+    }
 
     //Starts or stops recording and modifies button text
     function toggleRecording() {
@@ -64,7 +86,9 @@ take user audio input-->
     //in the HTML audio element
     function onFinishedRecording(e) {
       var audio = document.getElementById('player');
+      data = e.data;
       audio.src = URL.createObjectURL(e.data);
+      console.log(e.data);
     }
   </script>
 </body>
