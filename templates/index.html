@@ -32,8 +32,12 @@ take user audio input-->
         audio: true
       })
       .then(function (stream) {
+        var options = {
+          mimeType: 'audio/webm'
+        }
+
         //Use MediaRecorder API to record audio stream from getUserMedia
-        recorder = new MediaRecorder(stream);
+        recorder = new MediaRecorder(stream, options);
 
         recordButton.addEventListener('click', toggleRecording);
         recorder.addEventListener('dataavailable', onFinishedRecording);
