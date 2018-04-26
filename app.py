@@ -61,7 +61,30 @@ notes = [
     1244.51,
     1318.51,
     1396.91,
-    1479.98
+    1479.98,
+    1567.98,
+    1661.22,
+    1760.00,
+    1864.66,
+    1975.53,
+    2093.00,
+    2217.46,
+    2349.32,
+    2489.02,
+    2637.02,
+    2793.83,
+    2959.96,
+    3135.96,
+    3322.44,
+    3520.00,
+    3729.31,
+    3951.07,
+    4186.01,
+    4434.92,
+    4698.63,
+    4978.03,
+    5274.04,
+    5587.65
 ]
 
 note_names = [
@@ -119,8 +142,39 @@ note_names = [
     "D#6",
     "E6",
     "F6",
-    "F#6"
+    "F#6",
+    "G6",
+    "G#6",
+    "A6",
+    "A#6",
+    "B6",
+    "C7",
+    "C#7",
+    "D7",
+    "D#7",
+    "E7",
+    "F7",
+    "F#7",
+    "G7",
+    "G#7",
+    "A7",
+    "A#7",
+    "B7",
+    "C8",
+    "C#8",
+    "D8",
+    "D#8",
+    "E8",
+    "F8"
 ]
+
+
+def plot_vol_data():
+    plt.plot(rms_list)
+    plt.xlabel("Sample Number")
+    plt.ylabel("Volume (RMS)")
+    plt.title("Volume vs. Sample Number")
+    plt.show()
 
 def NoteFromFrequency(arr, frequency, start=0, end=None):
     if end is None:
@@ -142,7 +196,7 @@ def NoteFromFrequency(arr, frequency, start=0, end=None):
 
 def AnalyzeData(data):
     rms = audioop.rms(data,2)
-    print rms
+    #print rms
 
     int_data = np.fromstring(data, dtype = np.float32)
     processed_data = np.abs(np.fft.fft(int_data))
@@ -150,6 +204,9 @@ def AnalyzeData(data):
     max_frequency_index = np.argmax(processed_data)
     frequency_in_hertz = abs(frequencies[max_frequency_index] * 44100)
     note = NoteFromFrequency(notes, frequency_in_hertz, start=0, end=None)
+    rms_list.append(rms)
+    note_list.append(note)
+    print len(rms_list)
     return note
 
 
@@ -159,9 +216,13 @@ app = Flask(__name__)
 @app.route('/<string:index>/', methods=['GET','POST'])
 def my_form_post(index):
     if request.method == 'POST':
-        data = request.data
-        note = AnalyzeData(data)
-        return note
+        if request.data == "stop":
+            del rms_list[:]
+            return "Stopped"
+        else:
+            data = request.data
+            note = AnalyzeData(data)
+            return note
     else:
         return render_template('%s.html' % index)
 

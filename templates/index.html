@@ -15,6 +15,7 @@ take user audio input-->
   <audio id = "player" controls></audio>
   <button id = "mainButton" onclick = "mainButton()">Record Audio</button>
   <p id = "currentNote">Current Note: <span id = "new-text"></span></p>
+  <p id = "notesReturned"></p>
 
   </div>
   <script>
@@ -77,6 +78,14 @@ take user audio input-->
       console.log("Stopped");
       localStream.stop();
       context.close();
+      var req = new XMLHttpRequest();
+      req.onreadystatechange = function() {
+        if (this.readyState==4 && this.status == 200) {
+          document.getElementById("notesReturned").innerHTML = this.responseText;
+        }
+      };
+      req.open("POST","/index/", true);
+      req.send("stop");
     }
 
     function do_ajax(postData) {
