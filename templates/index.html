@@ -12,39 +12,74 @@ take user audio input-->
   <p>Press the button to begin and then play individual guitar notes.
     Press the button again to stop and the names of the notes will be returned.
   </p>
-  <button id = "record">Begin Recording</button>
   <audio id = "player" controls></audio>
-  <button onclick="do_ajax()">Find Notes Played</button>
-  <p id ="new-text">
-  </p>
+  <button id = "mainButton" onclick = "mainButton()">Record Audio</button>
+  <p id = "currentNote">Current Note: <span id = "new-text"></span></p>
 
   </div>
   <script>
     var recordButton, recorder;
     var clicked = 0;
     var data;
+    var localStream;
+    var context;
+    var i = 0;
 
-    window.onload = function () {
+
+    function mainButton() {
+      var mainButton = document.getElementById('mainButton');
+      if(clicked == 0) {
+        recordAudio();
+        mainButton.innerText = "Stop Recording";
+        clicked = 1;
+      }
+      else {
+        stopStream();
+        mainButton.innerText = "Record Audio";
+        clicked = 0;
+      }
+    }
+
+    function recordAudio () {
       recordButton = document.getElementById('record');
 
       //Get permission to use computer microphone
       navigator.mediaDevices.getUserMedia({
-        audio: true
+        audio: true, video: false
       })
       .then(function (stream) {
-        var options = {
-          mimeType: 'audio/webm'
-        }
-
-        //Use MediaRecorder API to record audio stream from getUserMedia
-        recorder = new MediaRecorder(stream, options);
-
-        recordButton.addEventListener('click', toggleRecording);
+        recorder = new MediaRecorder(stream);
         recorder.addEventListener('dataavailable', onFinishedRecording);
+        recorder.start();
+
+        localStream = stream.getTracks()[0];
+        context = new AudioContext();
+        console.log(context.sampleRate);
+        var source = context.createMediaStreamSource(stream);
+        var processor = context.createScriptProcessor(4096, 1, 1);
+
+        source.connect(processor);
+        processor.connect(context.destination);
+
+        processor.onaudioprocess = function(e) {
+          i = i+1;
+          console.log(i);
+          var fldata = e.inputBuffer.getChannelData(0);
+          console.log(fldata);
+          do_ajax(fldata);
+        }
       });
+
     };
 
-    function do_ajax() {
+    function stopStream() {
+      recorder.stop();
+      console.log("Stopped");
+      localStream.stop();
+      context.close();
+    }
+
+    function do_ajax(postData) {
       var req = new XMLHttpRequest();
       req.onreadystatechange = function() {
         if (this.readyState==4 && this.status == 200) {
@@ -52,21 +87,7 @@ take user audio input-->
         }
       };
       req.open("POST", "/index/", true);
-      req.send(data);
-    }
-
-    //Starts or stops recording and modifies button text
-    function toggleRecording() {
-      if (clicked == 0) {
-        recorder.start();
-        recordButton.innerText = "Stop Recording";
-        clicked = 1;
-      }
-      else {
-        recorder.stop();
-        clicked = 0;
-        recordButton.innerText = "Start Recording"
-      }
+      req.send(postData);
     }
 
     //Recieves a "dataavailable" signal upon the recorder being stopped

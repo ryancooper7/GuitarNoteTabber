@@ -11,7 +11,7 @@ h1 {
   text-align: center;
   font-family: 'header-font';
   font-weight: normal;
-  font-size: 35px;
+  font-size: 40px;
   color: #D37F66;
 }
 
@@ -73,4 +73,17 @@ input {
 
 form {
 
+}
+
+audio {
+  margin-right: 50px;
+}
+
+#new-text {
+  color: #046294;
+}
+
+#currentNote {
+  font-size: 25px;
+  color: #D37F66;
 }
