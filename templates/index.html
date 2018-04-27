@@ -8,13 +8,16 @@ take user audio input-->
 <body>
   <div id = "div1">
   <h1>GuitarNoteTabber</h1>
+  <div id = "separator"></div>
   <h2>Instructions</h2>
-  <p>Press the button to begin and then play individual guitar notes.
-    Press the button again to stop and the names of the notes will be returned.
+  <p>Press the button to begin and then play individual guitar notes. The name
+    of the current note you are playing will be displayed. Press the button again
+    to stop and the names of the notes will be returned along with the audio sample.
   </p>
   <audio id = "player" controls></audio>
   <button id = "mainButton" onclick = "mainButton()">Record Audio</button>
   <p id = "currentNote">Current Note: <span id = "new-text"></span></p>
+  <p id ="notesPlayed">You played the following notes: </p>
   <p id = "notesReturned"></p>
 
   </div>
@@ -55,7 +58,6 @@ take user audio input-->
 
         localStream = stream.getTracks()[0];
         context = new AudioContext();
-        console.log(context.sampleRate);
         var source = context.createMediaStreamSource(stream);
         var processor = context.createScriptProcessor(4096, 1, 1);
 
@@ -66,7 +68,6 @@ take user audio input-->
           i = i+1;
           console.log(i);
           var fldata = e.inputBuffer.getChannelData(0);
-          console.log(fldata);
           do_ajax(fldata);
         }
       });

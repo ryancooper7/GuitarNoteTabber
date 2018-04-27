@@ -1,5 +1,6 @@
 import math
 import audioop
+import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, render_template, request
 
@@ -168,6 +169,13 @@ note_names = [
     "F8"
 ]
 
+def calculate_rms(data):
+    sum = 0
+    for i in range (0, len(data)):
+        sum += data[i] * data[i]
+    rms = 100* (math.sqrt(sum / len(data)))
+    print rms
+    return rms
 
 def plot_vol_data():
     plt.plot(rms_list)
@@ -195,10 +203,11 @@ def NoteFromFrequency(arr, frequency, start=0, end=None):
     return NoteFromFrequency(arr, frequency, highermid + 1, end)
 
 def AnalyzeData(data):
-    rms = audioop.rms(data,2)
+    #rms = audioop.rms(data,2)
     #print rms
 
     int_data = np.fromstring(data, dtype = np.float32)
+    rms=calculate_rms(int_data)
     processed_data = np.abs(np.fft.fft(int_data))
     frequencies = np.fft.fftfreq(len(processed_data))
     max_frequency_index = np.argmax(processed_data)
@@ -206,10 +215,27 @@ def AnalyzeData(data):
     note = NoteFromFrequency(notes, frequency_in_hertz, start=0, end=None)
     rms_list.append(rms)
     note_list.append(note)
-    print len(rms_list)
     return note
 
-
+def find_notes():
+    notes = ""
+    if rms_list[0] > rms_list[1] and rms_list[0] > 8:
+        if notes == "":
+            notes = note_list[0]
+        else:
+            notes += "  " + note_list[0]
+    for i in range(1, len(rms_list) - 1):
+        if rms_list[i-1] < rms_list[i] and rms_list[i] > rms_list[i+1] and rms_list[i] > 8:
+            if notes == "":
+                notes = note_list[i]
+            else:
+                notes += "  " + note_list[i]
+    if rms_list[len(rms_list)-1] > rms_list[len(rms_list)-2] and rms_list[len(rms_list) - 1] > 8:
+            if notes == "":
+                notes = note_list[len(rms_list) - 1]
+            else:
+                notes += "  " + note_list[len(rms_list) - 1]
+    return notes
 
 app = Flask(__name__)
 
@@ -217,8 +243,10 @@ app = Flask(__name__)
 def my_form_post(index):
     if request.method == 'POST':
         if request.data == "stop":
+            notes_to_return = find_notes()
+            del note_list[:]
             del rms_list[:]
-            return "Stopped"
+            return notes_to_return
         else:
             data = request.data
             note = AnalyzeData(data)
