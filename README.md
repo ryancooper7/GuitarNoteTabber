@@ -6,7 +6,7 @@ Make sure the following Python packages are installed:
   -XLWT, MatlotLib, Flask, NumPy
 
 <h3>Run Instructions</h3>
-1. Clone this repository and navigate to the main folder
-2. From the terminal, run the command "python app.py"
-3. Navigate to the address specified in the terminal, usually http://127.0.0.1:5000/index/
+1. Clone this repository and navigate to the main folder  
+2. From the terminal, run the command "python app.py"  
+3. Navigate to the address specified in the terminal, usually http://127.0.0.1:5000/index/  
 
