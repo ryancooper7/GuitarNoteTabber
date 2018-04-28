@@ -1,5 +1,7 @@
 import math
+import xlwt
 import audioop
+from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, render_template, request
@@ -169,6 +171,15 @@ note_names = [
     "F8"
 ]
 
+def write_vol_to_excel(data, ws):
+    for i in range (0, len(data)):
+        ws.write(i, 0, data[i])
+
+def write_notes_to_excel(data, ws):
+    for i in range (0, len(data)):
+        ws.write(i, 1, data[i])
+
+
 def calculate_rms(data):
     sum = 0
     for i in range (0, len(data)):
@@ -220,16 +231,26 @@ def AnalyzeData(data):
 def find_notes():
     notes = ""
     if rms_list[0] > rms_list[1] and rms_list[0] > 8:
+        note_ops = rms_list[0:5]
+        print note_ops
+        c = Counter(note_ops)
+        common_note = c.most_common(1)[0][0]
+        print common_note
         if notes == "":
-            notes = note_list[0]
+            notes = common_note
         else:
-            notes += "  " + note_list[0]
+            notes += "  " + common_note
     for i in range(1, len(rms_list) - 1):
         if rms_list[i-1] < rms_list[i] and rms_list[i] > rms_list[i+1] and rms_list[i] > 8:
+            note_ops = note_list[i:i+5]
+            print note_ops
+            c = Counter(note_ops)
+            common_note = c.most_common(1)[0][0]
+            print common_note
             if notes == "":
-                notes = note_list[i]
+                notes = common_note
             else:
-                notes += "  " + note_list[i]
+                notes += "  " + common_note
     if rms_list[len(rms_list)-1] > rms_list[len(rms_list)-2] and rms_list[len(rms_list) - 1] > 8:
             if notes == "":
                 notes = note_list[len(rms_list) - 1]
@@ -243,6 +264,14 @@ app = Flask(__name__)
 def my_form_post(index):
     if request.method == 'POST':
         if request.data == "stop":
+            notes_to_return = find_notes()
+            wb = xlwt.Workbook()
+            ws = wb.add_sheet("A Test Sheet")
+            write_vol_to_excel(rms_list, ws)
+            write_notes_to_excel(note_list, ws)
+            ws. write(0, 5, notes_to_return)
+            wb.save("writing.xls")
+
             notes_to_return = find_notes()
             del note_list[:]
             del rms_list[:]
