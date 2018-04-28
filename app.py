@@ -1,6 +1,5 @@
 import math
 import xlwt
-import audioop
 from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +8,7 @@ from flask import Flask, render_template, request
 rms_list = []
 note_list = []
 
+#list of the frequencies of notes
 notes = [
     65.41,
     69.30,
@@ -90,6 +90,7 @@ notes = [
     5587.65
 ]
 
+#list of the note names corresponding to the frequencies above
 note_names = [
     "C2",
     "C#2",
@@ -171,15 +172,17 @@ note_names = [
     "F8"
 ]
 
+#writes volume data to excel, used for algorithm testing
 def write_vol_to_excel(data, ws):
     for i in range (0, len(data)):
         ws.write(i, 0, data[i])
 
+#writes note data to excel
 def write_notes_to_excel(data, ws):
     for i in range (0, len(data)):
         ws.write(i, 1, data[i])
 
-
+#calculates RMS with standard algorithm
 def calculate_rms(data):
     sum = 0
     for i in range (0, len(data)):
@@ -188,13 +191,7 @@ def calculate_rms(data):
     print rms
     return rms
 
-def plot_vol_data():
-    plt.plot(rms_list)
-    plt.xlabel("Sample Number")
-    plt.ylabel("Volume (RMS)")
-    plt.title("Volume vs. Sample Number")
-    plt.show()
-
+#Correlates note frequency to note name using binary search algorithm
 def NoteFromFrequency(arr, frequency, start=0, end=None):
     if end is None:
         end = len(arr) - 1
@@ -213,10 +210,9 @@ def NoteFromFrequency(arr, frequency, start=0, end=None):
         return NoteFromFrequency(arr, frequency, start, lowermid - 1)
     return NoteFromFrequency(arr, frequency, highermid + 1, end)
 
+#Changes raw sound data to integer, performs FFT, changes frequencies to Hz, and then adds
+#RMS (Volume of sound) and calculated notes to lists
 def AnalyzeData(data):
-    #rms = audioop.rms(data,2)
-    #print rms
-
     int_data = np.fromstring(data, dtype = np.float32)
     rms=calculate_rms(int_data)
     processed_data = np.abs(np.fft.fft(int_data))
@@ -228,6 +224,7 @@ def AnalyzeData(data):
     note_list.append(note)
     return note
 
+#takes lists of RMS and note names and determines which notes to output to user
 def find_notes():
     notes = ""
     if rms_list[0] > rms_list[1] and rms_list[0] > 8:
@@ -262,15 +259,16 @@ app = Flask(__name__)
 
 @app.route('/<string:index>/', methods=['GET','POST'])
 def my_form_post(index):
+    post = 0
     if request.method == 'POST':
         if request.data == "stop":
-            notes_to_return = find_notes()
-            wb = xlwt.Workbook()
-            ws = wb.add_sheet("A Test Sheet")
-            write_vol_to_excel(rms_list, ws)
-            write_notes_to_excel(note_list, ws)
-            ws. write(0, 5, notes_to_return)
-            wb.save("writing.xls")
+            #notes_to_return = find_notes()
+            #wb = xlwt.Workbook()
+            #ws = wb.add_sheet("A Test Sheet")
+            #write_vol_to_excel(rms_list, ws)
+            #write_notes_to_excel(note_list, ws)
+            #ws. write(0, 5, notes_to_return)
+            #wb.save("writing.xls")
 
             notes_to_return = find_notes()
             del note_list[:]
@@ -279,7 +277,11 @@ def my_form_post(index):
         else:
             data = request.data
             note = AnalyzeData(data)
-            return note
+            if post == 0:
+                post = 1
+                return note
+            elif post == 1:
+                post = 0
     else:
         return render_template('%s.html' % index)
 

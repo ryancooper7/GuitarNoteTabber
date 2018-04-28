@@ -44,6 +44,8 @@ take user audio input-->
       }
     }
 
+    //uses MediaRecorder API for recording and Web Audio API to get raw sound
+    //data. Sends raw audio data to server.
     function recordAudio () {
       recordButton = document.getElementById('record');
 
@@ -74,6 +76,8 @@ take user audio input-->
 
     };
 
+    //Stops the MediaRecorder recording, closes the web audio context, and then
+    //alerts the server that the recording has finished
     function stopStream() {
       recorder.stop();
       console.log("Stopped");
@@ -89,6 +93,7 @@ take user audio input-->
       req.send("stop");
     }
 
+    //sends data to Flask
     function do_ajax(postData) {
       var req = new XMLHttpRequest();
       req.onreadystatechange = function() {
