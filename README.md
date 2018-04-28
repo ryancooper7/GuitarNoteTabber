@@ -3,6 +3,7 @@ A web application that transcribes guitar notes from audio input. This applicati
 
 <h3>Dependencies:</h3>
 Make sure the following Python packages are installed:
+
   -XLWT, MatlotLib, Flask, NumPy
 
 <h3>Run Instructions</h3>
