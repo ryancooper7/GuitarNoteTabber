@@ -1,5 +1,5 @@
 # GuitarNoteTabber
-A web application that transcribes guitar notes from audio input. This application allows users to record and playback audio, see the pitch of the sound input in real-time, and see what notes were played upon the end of the recording. The front-end is written in HTML, CSS, and Javascript and the back-end is written using Python with the Flask web framework.
+A web application that transcribes guitar notes from audio input. This application allows users to record and playback audio, see the pitch of the sound input in real-time, and see what notes were played upon the end of the recording. The results are displayed with a line graph. The front-end is written in HTML, CSS, and Javascript and the back-end is written using Python with the Flask web framework.
 
 <h3>Dependencies:</h3>
 Make sure the following Python packages are installed:
