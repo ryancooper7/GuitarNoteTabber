@@ -41,7 +41,7 @@ body {
 }
 
 p {
-  color: #046294;
+  color: #3e95cd;
 }
 
 audio {
@@ -90,8 +90,13 @@ audio {
   margin-right: 50px;
 }
 
+canvas {
+  margin-bottom: 100px;
+  margin-top: 50px;
+}
+
 #new-text {
-  color: #046294;
+  color: #3e95cd;
 }
 
 #currentNote {
@@ -105,7 +110,16 @@ audio {
 
 }
 
-#notesReturned {
-  color: #046294;
+#graphTitle {
   font-size: 25px;
+  color: #D37F66;
+}
+
+#notesReturned {
+  color: #3e95cd;
+  font-size: 25px;
+}
+
+#final {
+  margin-bottom: 100px;
 }

@@ -3,6 +3,7 @@ take user audio input-->
 
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <link rel = "stylesheet" type = "text/css" href = "{{url_for('static',filename='stylesheets/styles.css')}}">
 </head>
 <body>
@@ -19,8 +20,17 @@ take user audio input-->
   <p id = "currentNote">Current Note: <span id = "new-text"></span></p>
   <p id ="notesPlayed">You played the following notes: </p>
   <p id = "notesReturned"></p>
-
   </div>
+
+  <p id = "graphTitle">Line Graph of Data:</p>
+  <canvas id = "myChart" width="1000" height="400"></canvas>
+  <p id = "final">
+    The graph above shows the volume level (measured in RMS). Additionally, the
+    musical note of each sample can be seen by scrolling over
+    points on the graph. The sample rate is 44100HZ and each sample is the average
+    of a buffer of length 4096, meaning that each data point occurs every 0.093 seconds
+    or 93 milliseconds.
+  </p>
   <script>
     var recordButton, recorder;
     var clicked = 0;
@@ -28,6 +38,40 @@ take user audio input-->
     var localStream;
     var context;
     var i = 0;
+    var ctx = document.getElementById("myChart");
+
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        responsive: false,
+        title: {
+          display: true,
+          text: "Input Volume and Corresponding Note"
+        },
+        scales: {
+          xAxes: [
+            {
+              ticks: {
+                display: false
+              }
+            }
+          ],
+          yAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'RMS * 100'
+            }
+          }]
+        }
+      }
+    });
+
 
 
     function mainButton() {
@@ -61,7 +105,7 @@ take user audio input-->
         localStream = stream.getTracks()[0];
         context = new AudioContext();
         var source = context.createMediaStreamSource(stream);
-        var processor = context.createScriptProcessor(2048, 1, 1);
+        var processor = context.createScriptProcessor(4096, 1, 1);
 
         source.connect(processor);
         processor.connect(context.destination);
@@ -86,7 +130,16 @@ take user audio input-->
       var req = new XMLHttpRequest();
       req.onreadystatechange = function() {
         if (this.readyState==4 && this.status == 200) {
-          document.getElementById("notesReturned").innerHTML = this.responseText;
+          var responseData = JSON.parse(this.responseText);
+          document.getElementById("notesReturned").innerHTML = responseData.guitar_notes;
+          console.log(responseData.rms_data)
+          myChart.data.labels = responseData.note_list_data;
+          myChart.data.datasets = [{
+            data: responseData.rms_data,
+            borderColor: "#3e95cd",
+            fill: false
+          }]
+          myChart.update();
         }
       };
       req.open("POST","/index/", true);

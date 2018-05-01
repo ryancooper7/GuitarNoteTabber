@@ -3,7 +3,7 @@ import xlwt
 from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 rms_list = []
 note_list = []
@@ -226,9 +226,10 @@ def AnalyzeData(data):
 
 #takes lists of RMS and note names and determines which notes to output to user
 def find_notes():
+    min_vol = 7
     notes = ""
-    if rms_list[0] > rms_list[1] and rms_list[0] > 8:
-        note_ops = rms_list[0:5]
+    if rms_list[0] > rms_list[1] and rms_list[0] > min_vol:
+        note_ops = rms_list[0:7]
         print note_ops
         c = Counter(note_ops)
         common_note = c.most_common(1)[0][0]
@@ -238,8 +239,8 @@ def find_notes():
         else:
             notes += "  " + common_note
     for i in range(1, len(rms_list) - 1):
-        if rms_list[i-1] < rms_list[i] and rms_list[i] > rms_list[i+1] and rms_list[i] > 8:
-            note_ops = note_list[i:i+5]
+        if rms_list[i-1] < rms_list[i] and rms_list[i] > rms_list[i+1] and rms_list[i] > min_vol:
+            note_ops = note_list[i:i+7]
             print note_ops
             c = Counter(note_ops)
             common_note = c.most_common(1)[0][0]
@@ -248,7 +249,7 @@ def find_notes():
                 notes = common_note
             else:
                 notes += "  " + common_note
-    if rms_list[len(rms_list)-1] > rms_list[len(rms_list)-2] and rms_list[len(rms_list) - 1] > 8:
+    if rms_list[len(rms_list)-1] > rms_list[len(rms_list)-2] and rms_list[len(rms_list) - 1] > min_vol:
             if notes == "":
                 notes = note_list[len(rms_list) - 1]
             else:
@@ -271,9 +272,16 @@ def my_form_post(index):
             #wb.save("writing.xls")
 
             notes_to_return = find_notes()
+            rms_list_return = rms_list[:]
+            note_list_return = note_list[:]
+            print rms_list_return
             del note_list[:]
             del rms_list[:]
-            return notes_to_return
+            return jsonify(
+                guitar_notes=notes_to_return,
+                rms_data = rms_list_return,
+                note_list_data = note_list_return
+            )
         else:
             data = request.data
             note = AnalyzeData(data)
